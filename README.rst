@@ -1,2 +1,12 @@
 # python-community-health
-Uses Github metrics to alert about projects that seem to need a hand
+
+A database is included.
+
+To view::
+
+    python manage.py runserver
+
+
+To update::
+
+    python manage.py github_health_update
