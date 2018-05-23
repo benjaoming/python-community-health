@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.conf import settings
 from github3 import login
 
 from ...models import GithubProject
@@ -17,7 +18,7 @@ class Command(BaseCommand):
         parser.add_argument('username', type=str)
 
     def update(self):
-        gh = login(self.username, password=self.password)
+        gh = login(settings.GITHUB_USERNAME, password=settings.GITHUB_PASSWORD)
         results = gh.search_repositories(query='language:python', sort='stars', number=1)
         print(dir(results))
         
