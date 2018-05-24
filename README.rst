@@ -12,3 +12,6 @@ To view::
 To update::
 
     python manage.py github_health_update
+
+
+.. image:: screenshot.png
