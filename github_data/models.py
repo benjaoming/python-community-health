@@ -8,15 +8,23 @@ class GithubProject(models.Model):
     stars = models.PositiveSmallIntegerField()
     watchers = models.PositiveSmallIntegerField()
     contributors = models.PositiveSmallIntegerField()
+    forks = models.PositiveSmallIntegerField()
+
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
     
-    open_pr_count = models.PositiveSmallIntegerField()
-    open_issue_count = models.PositiveSmallIntegerField()
+    open_pulls = models.PositiveSmallIntegerField()
+    closed_pulls = models.PositiveSmallIntegerField()
     
-    last_pr_closed = models.DateTimeField()
-    last_pr_opened = models.DateTimeField()
+    open_issues = models.PositiveSmallIntegerField()
+    closed_issues = models.PositiveSmallIntegerField()
+    
+    last_pr_closed = models.DateTimeField(null=True)
+    last_pr_opened = models.DateTimeField(null=True)
+    last_issue_closed = models.DateTimeField(null=True)
     
     sync_created = models.DateTimeField(auto_now_add=True)
-    sync_last_updated = models.DateTimeField(auto_now_add=True)
+    sync_last_updated = models.DateTimeField(auto_now=True)
 
     # Ignores a package in the lists
     ignore = models.BooleanField(default=False)
