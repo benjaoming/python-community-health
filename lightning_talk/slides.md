@@ -1,3 +1,5 @@
+<!-- $theme: default -->
+
 Metrics for open source community health
 ========================================
 
