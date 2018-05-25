@@ -1,3 +1,9 @@
+"""
+All these models should be rewritten once we know what the metrics are...
+
+https://github.com/benjaoming/python-community-health/issues/3
+"""
+
 from django.db import models
 from django.utils import timezone
 
@@ -78,7 +84,7 @@ class Scoring(models.Model):
 
     def update(self):
         """
-        Doesn't save anything
+        Does not call save()
         """
         
         self.open_issues = self.project.open_issues
@@ -91,16 +97,16 @@ class Scoring(models.Model):
         self.popularity = self.project.stars + self.project.watchers + self.project.forks
         
         if self.open_issues:
-            self.popularity_vs_issues = self.popularity / float(self.open_issues)
+            self.popularity_vs_issues = round(self.popularity / float(self.open_issues), 2)
         
-        self.popularity_vs_contributors = self.popularity / float(self.project.contributors)
+        self.popularity_vs_contributors = round(self.popularity / float(self.project.contributors), 2)
 
         if days_alive:
-            self.closed_issues_per_day = self.closed_issues / float(days_alive)
+            self.closed_issues_per_day = round(self.closed_issues / float(days_alive), 2)
 
         if self.project.last_pr_closed:
             if self.closed_issues_per_day:
-                self.popularity_vs_closed_issues_per_day = self.popularity / self.closed_issues_per_day
+                self.popularity_vs_closed_issues_per_day = round(self.popularity / float(self.closed_issues_per_day), 2)
             self.days_since_last_pr_merge = (timezone.now() - self.project.last_pr_closed).days
             if self.days_since_last_pr_merge:
-                self.popularity_vs_days_since_last_pr_merge = (float(self.days_since_last_pr_merge) * self.popularity) / 2000.0
+                self.popularity_vs_days_since_last_pr_merge = round((float(self.days_since_last_pr_merge) * self.popularity) / 2000.0, 2)
