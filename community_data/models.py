@@ -102,3 +102,5 @@ class Scoring(models.Model):
             if self.closed_issues_per_day:
                 self.popularity_vs_closed_issues_per_day = self.popularity / self.closed_issues_per_day
             self.days_since_last_pr_merge = (timezone.now() - self.project.last_pr_closed).days
+            if self.days_since_last_pr_merge:
+                self.popularity_vs_days_since_last_pr_merge = (float(self.days_since_last_pr_merge) * self.popularity) / 2000.0
