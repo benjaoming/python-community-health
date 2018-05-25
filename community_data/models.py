@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class GithubProject(models.Model):
+class Project(models.Model):
     
     owner = models.SlugField()
     repo = models.SlugField()

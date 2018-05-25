@@ -2,8 +2,8 @@ from django.contrib import admin
 
 from . import models
 
-@admin.register(models.GithubProject)
-class GithubProjectAdmin(admin.ModelAdmin):
+@admin.register(models.Project)
+class ProjectAdmin(admin.ModelAdmin):
     list_display = (
         "repo",
         "owner",

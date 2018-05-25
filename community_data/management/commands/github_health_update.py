@@ -1,8 +1,10 @@
+import time
+
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from github3 import login
 
-from ...models import GithubProject
+from ... import models
 
 
 class Command(BaseCommand):
@@ -18,7 +20,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--repo', type=str, dest='repo',
+            '--repo',
+            type=str,
+            dest='repo',
             help="Only update --repo=<owner/repo>",
         )
 
@@ -52,29 +56,28 @@ class Command(BaseCommand):
 
     def update(self):
         
-        # Fetches top 10 python projects
-        results_total = 10
+        # Fetches top 100 python projects
+        results_total = 100
         
         if self.options['repo']:
             owner, repo = self.options['repo'].split("/")
+            results_total = 0  # not used
             results = self.gh.search_repositories(
                 query="user:{} repo:{}".format(owner, repo)
             )
         else:
             results = self.gh.search_repositories(query='language:python', sort='stars', number=results_total)
         
-        
-        
         for cnt, r in enumerate(results):
             
             # Create or update existing data
             try:
-                p = GithubProject.objects.get(
+                p = models.Project.objects.get(
                     owner=r.repository.owner,
                     repo=r.repository.name,
                 )
-            except GithubProject.DoesNotExist:
-                p = GithubProject(
+            except models.Project.DoesNotExist:
+                p = models.Project(
                     owner=r.repository.owner,
                     repo=r.repository.name,
                 )
@@ -85,7 +88,7 @@ class Command(BaseCommand):
             print("Now scraping {repo} ({cnt}/{total})".format(
                 repo=repo,
                 cnt=cnt + 1,
-                total=results.total_count,
+                total=results_total or results.total_count,
             ))
             
             # More information is in this dict than the attributes populated...
@@ -111,3 +114,6 @@ class Command(BaseCommand):
             p.created_at = repo_dict['created_at']
             p.updated_at = repo_dict['updated_at']
             p.save()
+
+            # Then sleep a little bit because of Github
+            time.sleep(0.5)
