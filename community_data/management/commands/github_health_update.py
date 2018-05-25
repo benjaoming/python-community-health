@@ -115,5 +115,7 @@ class Command(BaseCommand):
             p.updated_at = repo_dict['updated_at']
             p.save()
 
-            # Then sleep a little bit because of Github
-            time.sleep(0.5)
+            # Then sleep a little bit because of Github API rate limits
+            # (not having this didn't work!)
+            # Can be improved by actually counting how many requests we send
+            time.sleep(2)
