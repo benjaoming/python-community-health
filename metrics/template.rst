@@ -1,7 +1,9 @@
 Metric: Name
 ============
 
-Compoents:
+Open a pull request for a new metric and track Issue #1.
+
+Components:
 
 * Component 1
 * Component 2
