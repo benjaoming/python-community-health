@@ -8,6 +8,9 @@ To view::
 
     python manage.py runserver
 
+Navigate to ``http://127.0.0.1:8000/admin/`` and login with
+``admin/admin1234``.
+
 
 To update::
 
