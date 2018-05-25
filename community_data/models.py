@@ -1,7 +1,11 @@
 from django.db import models
+from django.utils import timezone
 
 
 class Project(models.Model):
+    """
+    This is a prototype :)
+    """
     
     owner = models.SlugField()
     repo = models.SlugField()
@@ -31,6 +35,9 @@ class Project(models.Model):
 
     class Meta:
         unique_together = ('owner', 'repo')
+    
+    def __str__(self):
+        return "{}/{}".format(self.owner, self.repo)
 
 
 class Scoring(models.Model):
@@ -50,20 +57,48 @@ class Scoring(models.Model):
     open_issues = models.PositiveSmallIntegerField()
     closed_issues = models.PositiveSmallIntegerField()
     
-    #: Aggregated popularity: Watches, stars, forks
     popularity = models.FloatField()
 
-    popularity_vs_issues = models.FloatField()
+    popularity_vs_issues = models.FloatField(null=True)
     
     popularity_vs_contributors = models.FloatField()
 
-    closed_issues_per_day = models.FloatField()
+    # Stuff that may be none (if issues disabled, no merged pulls etc..)
 
-    popularity_vs_closed_issues_per_day = models.FloatField()
+    closed_issues_per_day = models.FloatField(null=True)
 
-    days_since_last_pr_merge = models.FloatField()
+    popularity_vs_closed_issues_per_day = models.FloatField(null=True)
 
-    popularity_vs_days_since_last_pr_merge = models.FloatField()
+    days_since_last_pr_merge = models.FloatField(null=True)
+
+    popularity_vs_days_since_last_pr_merge = models.FloatField(null=True)
 
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
+
+    def update(self):
+        """
+        Doesn't save anything
+        """
+        
+        self.open_issues = self.project.open_issues
+        self.closed_issues = self.project.closed_issues
+        self.open_pulls = self.project.open_pulls
+        self.closed_pulls = self.project.closed_pulls
+
+        days_alive = (timezone.now() - self.project.created_at).days
+        
+        self.popularity = self.project.stars + self.project.watchers + self.project.forks
+        
+        if self.open_issues:
+            self.popularity_vs_issues = self.popularity / float(self.open_issues)
+        
+        self.popularity_vs_contributors = self.popularity / float(self.project.contributors)
+
+        if days_alive:
+            self.closed_issues_per_day = self.closed_issues / float(days_alive)
+
+        if self.project.last_pr_closed:
+            if self.closed_issues_per_day:
+                self.popularity_vs_closed_issues_per_day = self.popularity / self.closed_issues_per_day
+            self.days_since_last_pr_merge = (timezone.now() - self.project.last_pr_closed).days

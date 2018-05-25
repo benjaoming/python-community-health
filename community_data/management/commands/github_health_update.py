@@ -36,7 +36,7 @@ class Command(BaseCommand):
                 owner=owner,
                 repo=repo,
                 type=issue_type,
-                state="open"
+                state=state,
             ),
             sort=sort,
             order=order,
